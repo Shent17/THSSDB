@@ -1,9 +1,6 @@
 package cn.edu.thssdb.client;
 
-import cn.edu.thssdb.rpc.thrift.ConnectReq;
-import cn.edu.thssdb.rpc.thrift.ConnectResp;
-import cn.edu.thssdb.rpc.thrift.GetTimeReq;
-import cn.edu.thssdb.rpc.thrift.IService;
+import cn.edu.thssdb.rpc.thrift.*;
 import cn.edu.thssdb.server.ThssDB;
 import cn.edu.thssdb.utils.Global;
 import org.apache.commons.cli.CommandLine;
@@ -37,7 +34,7 @@ public class Client {
   static final String PORT_ARGS = "p";
   static final String PORT_NAME = "port";
 
-  private static long sessionId;
+  private long sId = 0;
 
   private static final PrintStream SCREEN_PRINTER = new PrintStream(System.out);
   private static final Scanner SCANNER = new Scanner(System.in);
@@ -48,12 +45,13 @@ public class Client {
   private static CommandLine commandLine;
 
   public static void main(String[] args) {
-    sessionId = -1;
+    //sessionId = -1;
     commandLine = parseCmd(args);
     if (commandLine.hasOption(HELP_ARGS)) {
       showHelp();
       return;
     }
+    Client c = new Client();
     try {
       echoStarting();
       String host = commandLine.getOptionValue(HOST_ARGS, Global.DEFAULT_SERVER_HOST);
@@ -75,12 +73,14 @@ public class Client {
             open = false;
             break;
           case Global.CONNECT:
-            connect();
+            c.connect();
+            break;
           case Global.DISCONNECT:
-            disconnect();
+            c.disconnect();
+            break;
           default:
             println("Invalid statements!");
-            execute(msg);
+            c.execute(msg);
             break;
         }
         long endTime = System.currentTimeMillis();
@@ -104,31 +104,77 @@ public class Client {
     }
   }
 
-  private static void connect() {
-    if(sessionId != -1) {
-      println("Connect Successfully!");
-      return;
-    }
+  private void connect() {
+//    if(sessionId != -1) {
+//      println("已经连接!");
+//      return;
+//    }
+    ConnectReq req = new ConnectReq("username","password");
     try {
-      ConnectReq req = new ConnectReq("username","password");
       ConnectResp resp = client.connect(req);
       System.out.println(resp);
 
-      if(resp.getStatus().getCode() == Global.SUCCESS_CODE) {
-
+      if(resp.getStatus().code == Global.SUCCESS_CODE) {
+        sId = resp.getSessionId();
+        println("连接成功，sessionID = " + sId);
       }
+      else
+        println("连接失败");
 
     } catch (TException e) {
       logger.error(e.getMessage());
     }
   }
 
-  private static void disconnect() {
+  private void disconnect() {
+//    if(sessionId == -1)
+//    {
+//      println("未连接");
+//      return;
+//    }
+    DisconnetReq req = new DisconnetReq(sId);
+    try {
 
+      DisconnetResp resp = client.disconnect(req);
+
+      if(resp.getStatus().getCode() == Global.SUCCESS_CODE)
+        println("成功离线");
+      else
+        println("离线失败，sessionID有误！");
+    } catch (TException e) {
+      logger.error(e.getMessage());
+    }
+//    finally {
+//      sessionId = -1;
+//    }
   }
 
-  private static void execute(String msg) {
+  private void execute(String msg) {
+//    if(sessionId == -1) {
+//      println("未连接");
+//      return;
+//    }
+    ExecuteStatementReq req = new ExecuteStatementReq(sId, msg);
+    try {
+      ExecuteStatementResp resp = client.executeStatement(req);
+      if(resp.hasResult) {
+        if(resp.columnsList != null) {
+          System.out.println(resp.columnsList);
+        }
+        if(resp.rowList != null) {
+          for(int i = 0; i < resp.rowList.size(); i++)
+          {
+            System.out.println(resp.rowList.get(i).toString());
+          }
+        }
+      }
+      else {
+        println("错误信息："+ resp.status.msg);
+      }
 
+    } catch (TException e) {
+      logger.error(e.getMessage());
+    }
   }
 
   static Options createOptions() {
