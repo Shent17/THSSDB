@@ -18,11 +18,11 @@ struct ConnectResp{
   2: required i64 sessionId
 }
 
-struct DisconnetReq{
+struct DisconnectReq{
   1: required i64 sessionId
 }
 
-struct DisconnetResp{
+struct DisconnectResp{
   1: required Status status
 }
 
@@ -40,14 +40,20 @@ struct ExecuteStatementResp{
   1: required Status status
   2: required bool isAbort
   3: required bool hasResult
-  // only for query
+  // for select
   4: optional list<string> columnsList
   5: optional list<list<string>> rowList
+  // for update and delete
+  6: optional i64 changedNum
+  // for failure
+  7: optional string errorInfo
+  // for others
+  8: optional list<string> resultInfo
 }
 
 service IService {
   GetTimeResp getTime(1: GetTimeReq req);
   ConnectResp connect(1: ConnectReq req);
-  DisconnetResp disconnect(1: DisconnetReq req);
+  DisconnectResp disconnect(1: DisconnectReq req);
   ExecuteStatementResp executeStatement(1: ExecuteStatementReq req);
 }
