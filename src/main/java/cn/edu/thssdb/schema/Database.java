@@ -6,9 +6,8 @@ import cn.edu.thssdb.exception.NameAlreadyExistException;
 import cn.edu.thssdb.exception.NameNotExistException;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
+
 import cn.edu.thssdb.query.QueryResult;
 import cn.edu.thssdb.query.QueryTable;
 import java.util.HashMap;
@@ -145,5 +144,27 @@ public class Database {
   public void quit() {
     // TODO
     persist();
+  }
+
+  public ArrayList<Column> show(String table_name){
+    if(!this.tables.containsKey(table_name))
+      throw new NameNotExistException(NameNotExistException.TableName);
+
+    return tables.get(table_name).getColumns();
+  }
+
+  public void update(String table_name, LinkedList ovalue, LinkedList nvalue){
+    if(!this.tables.containsKey(table_name))
+      throw new NameNotExistException(NameNotExistException.TableName);
+
+    //tables.get(table_name).update(ovalue, nvalue);
+  }
+
+  public Table getTable(String table_name) {
+    if (!this.tables.containsKey(table_name))
+      throw new NameNotExistException(NameNotExistException.TableName);
+    if (this.tables.containsKey(table_name))
+      return this.tables.get(table_name);
+    return null;
   }
 }

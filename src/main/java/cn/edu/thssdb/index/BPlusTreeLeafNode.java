@@ -4,6 +4,7 @@ import cn.edu.thssdb.exception.DuplicateKeyException;
 import cn.edu.thssdb.exception.KeyNotExistException;
 import cn.edu.thssdb.utils.Global;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -67,6 +68,11 @@ public class BPlusTreeLeafNode<K extends Comparable<K>, V> extends BPlusTreeNode
   @Override
   K getFirstLeafKey() {
     return keys.get(0);
+  }
+
+  @Override
+  ArrayList<K> getAllKeys() {
+    return keys;
   }
 
   @Override
