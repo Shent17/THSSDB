@@ -25,6 +25,16 @@ public class Row implements Serializable {
     this.entries.addAll(entries);
   }
 
+  public void appendOneEntry(Entry entry) { this.entries.add(entry); }
+
+  //获得第i个数据（Object）
+  public Object get(int i) {
+    if(entries.get(i) == null)
+      return null;
+    else
+      return entries.get(i).value;
+  }
+
   public String toString() {
     if (entries == null)
       return "EMPTY";

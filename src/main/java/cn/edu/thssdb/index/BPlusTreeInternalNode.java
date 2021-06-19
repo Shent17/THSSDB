@@ -81,6 +81,17 @@ public final class BPlusTreeInternalNode<K extends Comparable<K>, V> extends BPl
   }
 
   @Override
+  ArrayList<K> getAllKeys() {
+    ArrayList<K> leafNodeKeys = new ArrayList<>();
+    for(BPlusTreeNode<K, V> child: children) {
+      if(child == null)
+        continue;
+      leafNodeKeys.addAll(child.getAllKeys());
+    }
+    return leafNodeKeys;
+  }
+
+  @Override
   BPlusTreeNode<K, V> split() {
     int from = size() / 2 + 1;
     int to = size();

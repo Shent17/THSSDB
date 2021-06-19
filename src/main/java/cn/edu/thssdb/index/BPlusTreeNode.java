@@ -19,6 +19,8 @@ abstract class BPlusTreeNode<K extends Comparable<K>, V> {
 
   abstract K getFirstLeafKey();
 
+  abstract ArrayList<K> getAllKeys();
+
   abstract BPlusTreeNode<K, V> split();
 
   abstract void merge(BPlusTreeNode<K, V> sibling);

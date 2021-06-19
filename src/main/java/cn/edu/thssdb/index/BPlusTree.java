@@ -2,6 +2,8 @@ package cn.edu.thssdb.index;
 
 import cn.edu.thssdb.utils.Pair;
 
+import java.util.ArrayList;
+
 public final class BPlusTree<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
   BPlusTreeNode<K, V> root;
@@ -44,6 +46,10 @@ public final class BPlusTree<K extends Comparable<K>, V> implements Iterable<Pai
   public boolean contains(K key) {
     if (key == null) throw new IllegalArgumentException("argument key to contains() is null");
     return root.containsKey(key);
+  }
+
+  public ArrayList<K> getAllKeys() {
+    return root.getAllKeys();
   }
 
   private void checkRoot() {

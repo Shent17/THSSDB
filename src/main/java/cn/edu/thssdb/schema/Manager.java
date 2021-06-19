@@ -65,7 +65,7 @@ public class Manager {
     Database new_db = new Database(dbname);
     this.databases.put(dbname, new_db);
 
-    //persist();
+    persist();
     return new_db;
   }
 
@@ -80,7 +80,7 @@ public class Manager {
     if(!deleteDir(f))
       throw new FileException(FileException.DeleteError);
 
-    //persist();
+    persist();
   }
 
   public static boolean deleteDir(File f) {
